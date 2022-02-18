@@ -1,20 +1,24 @@
 PODS:
   - Alamofire (5.5.0)
+  - SwiftyJSON (5.0.1)
   - TinyConstraints (4.0.2)
 
 DEPENDENCIES:
   - Alamofire
+  - SwiftyJSON
   - TinyConstraints
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - SwiftyJSON
     - TinyConstraints
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
+  SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   TinyConstraints: 7b7ccc0c485bb3bb47082138ff28bc33cd49897f
 
-PODFILE CHECKSUM: 1347fa077b1de626e72bf33864857dfdf9296d42
+PODFILE CHECKSUM: a3840ed3201b6fbe28905fe9bc12ad820590ced5
 
 COCOAPODS: 1.11.2

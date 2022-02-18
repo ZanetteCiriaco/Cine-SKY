@@ -7,7 +7,8 @@ target 'Cine SKY' do
 
   # Pods for Cine SKY
 
-	pod "TinyConstraints"
+    pod "TinyConstraints"
   	pod "Alamofire"
+    pod 'SwiftyJSON'
 
 end

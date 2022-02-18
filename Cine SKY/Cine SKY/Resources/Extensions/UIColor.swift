@@ -10,10 +10,6 @@ import UIKit
 
 extension UIColor {
     
-//    static let customBlack: UIColor = {
-//        return UIColor(red: 21/255.0, green: 23/255.0, blue: 33/255.0, alpha: 1)
-//    }()
-    
     static let customBlack: UIColor = {
         return UIColor(red: 17/255.0, green: 23/255.0, blue: 28/255.0, alpha: 1)
     }()

@@ -9,6 +9,8 @@ import UIKit
 
 class DetailsViewController: UIViewController {
     
+    private var movie: Movie!
+    
     private var scrollView: UIScrollView = {
         let view = UIScrollView(frame: .zero)
         view.isScrollEnabled = true
@@ -17,19 +19,24 @@ class DetailsViewController: UIViewController {
         return view
     }()
     
-    private var posterImage: UIImageView = {
+    private var spinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.style = .large
+        spinner.startAnimating()
+        return spinner
+    }()
+    
+    private lazy var posterImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFit
-        image.loadImage(url: "https://m.media-amazon.com/images/M/MV5BOTI4NDhhNGEtZjQxZC00ZTRmLThmZTctOGJmY2ZlOTc0ZGY0XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg") {}
+        image.loadImage(url: movie.title.image.url) { self.spinner.stopAnimating() }
         image.clipsToBounds = true
         image.width(UIScreen.main.bounds.width * 0.6)
-        //apagar height
         image.height(UIScreen.main.bounds.height * 0.5)
-        //image.backgroundColor = .blue
         return image
     }()
     
-    private var nameLabel: UILabel = {
+    private lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 26, weight: .semibold)
         label.width(UIScreen.main.bounds.width - 40)
@@ -37,11 +44,11 @@ class DetailsViewController: UIViewController {
         label.lineBreakMode = .byTruncatingTail
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.text = "Nome do filme assim assado a vinganca"
+        label.text = movie.title.title
         return label
     }()
     
-    private var summaryLabel: UILabel = {
+    private lazy var plotOutlineLabel: UILabel = {
         let label = UILabel()
         label.width(UIScreen.main.bounds.width - 40)
         label.textColor = .lightGray
@@ -49,7 +56,7 @@ class DetailsViewController: UIViewController {
         label.lineBreakMode = .byTruncatingTail
         label.numberOfLines = 0
         label.textAlignment = .justified
-        label.text = "Stan burns down his home and takes a job as a carny with a traveling carnival. Stan is disturbed at how any man could sink to the level of performing as a geek. Clem explains that he seeks out alcoholic or drug-addicted men with troubled pasts, and lures them in with promises of a \"temporary\" job and opium-laced alcohol. He then uses their dependence until they sink into madness and depravity, thus creating a new geek. Stan also works with clairvoyant act \"Madame Zeena\" and her alcoholic husband, Pete. He and Zeena warn Stan not to ever use these skills otherwise people get hurt. Meanwhile Stan becomes attracted to fellow performer Molly and approaches her with an idea for a two-person act away from the carnival."
+        label.text = movie.plotOutline.text
         return label
     }()
     
@@ -61,29 +68,41 @@ class DetailsViewController: UIViewController {
         return label
     }()
     
-    private var genresLabel: UILabel = {
+    private lazy var genresLabel: UILabel = {
         let label = UILabel()
-        label.customLabel(label: "Gênero", value: "acao, aventura, alguma")
+        label.numberOfLines = 0
+        label.lineBreakMode = .byTruncatingTail
+        label.width(UIScreen.main.bounds.width - 40)
+        label.customLabel(label: "Gênero", value: label.genreFormatter(array: movie.genres))
         return label
     }()
     
-    private var durationLabel: UILabel = {
+    private lazy var durationLabel: UILabel = {
         let label = UILabel()
-        label.customLabel(label: "Duração", value: label.timeFormatter(time: 120))
+        label.customLabel(label: "Duração", value: label.timeFormatter(time: movie.title.runningTimeInMinutes ?? 0))
         return label
     }()
     
-    private var releaseDateLabel: UILabel = {
+    private lazy var releaseDateLabel: UILabel = {
         let label = UILabel()
-        label.customLabel(label: "Lançamento", value: label.convertDate(string: "2021-12-01"))
+        label.customLabel(label: "Lançamento", value: label.convertDate(string: movie.releaseDate))
         return label
     }()
     
-    private var popularityLabel: UILabel = {
+    private lazy var popularityLabel: UILabel = {
         let label = UILabel()
-        label.customLabel(label: "Popularidade", value: "\(78.07)")
+        label.customLabel(label: "Popularidade", value: (movie.ratings.canRate ? "\(movie.ratings.rating!)" : ""))
         return label
     }()
+    
+    init(movie: Movie){
+        self.movie = movie
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,9 +114,10 @@ class DetailsViewController: UIViewController {
     
     private func configureView() {
         view.addSubview(scrollView)
+        scrollView.addSubview(spinner)
         scrollView.addSubview(posterImage)
         scrollView.addSubview(nameLabel)
-        scrollView.addSubview(summaryLabel)
+        scrollView.addSubview(plotOutlineLabel)
         scrollView.addSubview(datasheetLabel)
         scrollView.addSubview(genresLabel)
         scrollView.addSubview(durationLabel)
@@ -106,6 +126,7 @@ class DetailsViewController: UIViewController {
         
         setupConstraints()
     }
+    
     
     private func setupConstraints() {
         scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
@@ -116,13 +137,16 @@ class DetailsViewController: UIViewController {
         posterImage.centerXToSuperview()
         posterImage.topToSuperview(offset: 40)
         
+        spinner.centerX(to: posterImage)
+        spinner.centerY(to: posterImage)
+        
         nameLabel.topToBottom(of: posterImage, offset: 20)
         nameLabel.centerXToSuperview()
         
-        summaryLabel.topToBottom(of: nameLabel, offset: 20)
-        summaryLabel.centerXToSuperview()
+        plotOutlineLabel.topToBottom(of: nameLabel, offset: 20)
+        plotOutlineLabel.centerXToSuperview()
         
-        datasheetLabel.topToBottom(of: summaryLabel, offset: 30)
+        datasheetLabel.topToBottom(of: plotOutlineLabel, offset: 30)
         datasheetLabel.leftToSuperview(offset: 20)
         
         genresLabel.topToBottom(of: datasheetLabel, offset: 20)
@@ -184,17 +208,16 @@ private extension UILabel{
         }
     }
     
-    
-//    func genreFormatter(array: [String]) -> String{
-//
-//        var genreList: [String] = []
-//
-//        for genre in array {
-//            genreList.append(genre.name)
-//        }
-//
-//        let returnString = genreList.joined(separator: ", ")
-//
-//        return returnString
-//    }
+    func genreFormatter(array: [String]) -> String{
+
+        var genreList: [String] = []
+
+        for genre in array {
+            genreList.append(genre)
+        }
+
+        let returnString = genreList.joined(separator: ", ")
+
+        return returnString
+    }
 }

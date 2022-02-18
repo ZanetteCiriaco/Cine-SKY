@@ -17,17 +17,22 @@ class MoviesCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    private var posterImage: UIImageView = {
+    private lazy var posterImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleToFill
+        image.height(self.contentView.bounds.height * 0.80)
         image.clipsToBounds = true
         image.layer.cornerRadius = 5
         return image
     }()
     
-    private var nameLabel: UILabel = {
+    private lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
+        label.lineBreakMode = .byTruncatingTail
+        label.numberOfLines = 0
+        label.sizeToFit()
+        label.width(self.contentView.bounds.width)
         return label
     }()
     
@@ -45,8 +50,6 @@ class MoviesCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(posterImage)
         contentView.addSubview(nameLabel)
         
-       
-        
         setupConstraints()
     }
     
@@ -55,16 +58,13 @@ class MoviesCollectionViewCell: UICollectionViewCell {
         posterImage.leftToSuperview()
         posterImage.rightToSuperview()
         
-        nameLabel.bottomToSuperview(offset: -10)
         nameLabel.topToBottom(of: posterImage, offset: 10)
     }
     
     private func setValues() {
         
         let url = movie?.title.image.url
-        
-//        "https://m.media-amazon.com/images/M/MV5BOTI4NDhhNGEtZjQxZC00ZTRmLThmZTctOGJmY2ZlOTc0ZGY0XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"
-//
+    
         posterImage.loadImage(url: url ?? "") {}
         
         nameLabel.text = movie?.title.title ?? ""

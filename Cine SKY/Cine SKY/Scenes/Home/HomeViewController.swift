@@ -11,9 +11,15 @@ import TinyConstraints
 class HomeViewController: UIViewController {
     
     let provider = MoviesProvider()
-    var mostPopularMoviesId: [String] = []
     var movies: [Movie] = []
-    let array = ["/title/tt7740491/","/title/tt7740492/","/title/tt7740493/","/title/tt7740494/"]
+    
+    private lazy var spinner: UIActivityIndicatorView = {
+        let spinner = UIActivityIndicatorView()
+        spinner.center =  self.view.center
+        spinner.style = .large
+        spinner.startAnimating()
+        return spinner
+    }()
     
     private lazy var moviesCollection: UICollectionView = {
         let width = (UIScreen.main.bounds.width - 60)/2
@@ -21,7 +27,7 @@ class HomeViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 20
         layout.minimumLineSpacing = 20
-        layout.itemSize = CGSize(width: width, height: UIScreen.main.bounds.height * 0.37)
+        layout.itemSize = CGSize(width: width, height: UIScreen.main.bounds.height * 0.38)
         
         let collection = UICollectionView(frame: view.frame, collectionViewLayout: layout)
         collection.backgroundColor = .customBlack
@@ -41,9 +47,11 @@ class HomeViewController: UIViewController {
         navigationItem.backButtonTitle = ""
         
         view.backgroundColor = .customBlack
+        view.addSubview(spinner)
         
         provider.getMostPopularMoviesId { res in
             self.movies = res
+            self.spinner.stopAnimating()
             self.configureView()
         }
     }
@@ -60,6 +68,10 @@ class HomeViewController: UIViewController {
         moviesCollection.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
         moviesCollection.bottomToSuperview(offset: -10)
     }
+    
+    private func setupAcitivityIndicator() {
+        
+    }
 }
 
 
@@ -69,7 +81,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return mostPopularMoviesId.count
+        return movies.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -81,7 +93,8 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.navigationController?.pushViewController(DetailsViewController(), animated: true)
+        let movie = self.movies[indexPath.row]
+        self.navigationController?.pushViewController(DetailsViewController(movie: movie), animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
